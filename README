@@ -1,0 +1,8 @@
+SimplePy
+--------
+A Simple Python Server Based on TornadoWeb server
+
+Design Goals:
+------------
+  1. Server should have a simple apache kind of functionality of having a DocRoot.
+  2. Server shouldn't need restart when updating any files.
