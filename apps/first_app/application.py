@@ -1,4 +1,4 @@
-class IndexHandler(tornado.web.RequestHandler):
+class MainHandler(tornado.web.RequestHandler):
   def get(self):
     self.write(str(os.listdir("/")))
 

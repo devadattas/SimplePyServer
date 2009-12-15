@@ -13,9 +13,12 @@ import tornado.options
 import tornado.web
 import tornado.escape
 import tornado.template
+import tornado.auth
 import tornado.ioloop 
 import unicodedata
 from tornado.options import define, options
+from base64 import b64decode
+from crypt  import crypt
 
 config_file = open("config.yml")
 config = yaml.load(config_file)
@@ -23,10 +26,11 @@ config_file.close()
 
 define("port", default=8888, help="The server is run on the given port.", type=int)
 
-define("default_apps_dir", default=os.path.join(os.path.dirname(__file__), "apps"), help="The default location where all applications reside")
+define("apps_dir", default=os.path.join(os.path.dirname(__file__), "apps"), help="The default location where all applications reside")
 
-applications_list = os.listdir(options.default_apps_dir)
-applications_list = [app for app in applications_list if(os.path.isfile(os.path.join(os.path.dirname(__file__), options.default_apps_dir, app, "config.yml")))]
+applications_list = os.listdir(options.apps_dir)
+applications_list = [app for app in applications_list if(os.path.isfile(os.path.join(os.path.dirname(__file__), options.apps_dir, app, "config.yml"))
+                                                         and os.path.isfile(os.path.join(os.path.dirname(__file__), options.apps_dir, app, "routes.yml")))]
 
 class IndexHandler(tornado.web.RequestHandler):
   def get(self):
@@ -34,6 +38,7 @@ class IndexHandler(tornado.web.RequestHandler):
 
 class ResetHandler(tornado.web.RequestHandler):
   def get(self):
+    self.write("Ec")
     logging.info("Server restart requested. Rebooting server.")
     io_loop = tornado.ioloop.IOLoop.instance()
     for fd in io_loop._handlers.keys():
@@ -43,8 +48,28 @@ class ResetHandler(tornado.web.RequestHandler):
         pass
     os.execv(sys.executable, [sys.executable] + sys.argv) 
 
+#Handling External Applications Starts
 
-handlers = [ 
+handlers = []
+application_code = ""
+
+for app in applications_list:
+  sys.path.append(str(os.path.join(os.path.dirname(__file__), options.apps_dir, app)))
+  app_file = open(os.path.join(os.path.dirname(__file__), options.apps_dir, app,"application.py"))
+  application_code = application_code + app_file.read()
+  app_file.close()
+
+exec(application_code)
+
+for app in applications_list:
+  routes_file = open(os.path.join(os.path.dirname(__file__), options.apps_dir, app,"routes.yml"))
+  routes = yaml.load(routes_file)
+  routes_file.close()
+  routes = routes['app_route']
+  route_handlers = [(r"/"+app+str(v['route']),eval(v['handler'])) for i,v in routes.iteritems()]
+  handlers = handlers + route_handlers
+
+handlers = handlers + [ 
              (r"/", IndexHandler),
              (r"/reset", ResetHandler),
             ]
@@ -56,6 +81,7 @@ settings = {
             'static_path': os.path.join(os.path.dirname(__file__), "static"),
            }
 
+#Handling External Applications Ends
 application_init = tornado.web.Application(handlers, **settings)
 
 def main():
