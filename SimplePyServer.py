@@ -30,7 +30,8 @@ define("apps_dir", default=os.path.join(os.path.dirname(__file__), "apps"), help
 
 applications_list = os.listdir(options.apps_dir)
 applications_list = [app for app in applications_list if(os.path.isfile(os.path.join(os.path.dirname(__file__), options.apps_dir, app, "config.yml"))
-                                                         and os.path.isfile(os.path.join(os.path.dirname(__file__), options.apps_dir, app, "routes.yml")))]
+                                                         and os.path.isfile(os.path.join(os.path.dirname(__file__), options.apps_dir, app, "routes.yml"))
+                                                         and os.path.isfile(os.path.join(os.path.dirname(__file__), options.apps_dir, app, "__init__.py")))]
 
 class IndexHandler(tornado.web.RequestHandler):
   def get(self):
@@ -38,7 +39,6 @@ class IndexHandler(tornado.web.RequestHandler):
 
 class ResetHandler(tornado.web.RequestHandler):
   def get(self):
-    self.write("Ec")
     logging.info("Server restart requested. Rebooting server.")
     io_loop = tornado.ioloop.IOLoop.instance()
     for fd in io_loop._handlers.keys():
@@ -51,28 +51,25 @@ class ResetHandler(tornado.web.RequestHandler):
 #Handling External Applications Starts
 
 handlers = []
-application_code = ""
 
 for app in applications_list:
-  sys.path.append(str(os.path.join(os.path.dirname(__file__), options.apps_dir, app)))
-  app_file = open(os.path.join(os.path.dirname(__file__), options.apps_dir, app,"application.py"))
-  application_code = application_code + app_file.read()
-  app_file.close()
+  exec('import '+str(options.apps_dir)+'.'+str(app)+'.application')
 
-exec(application_code)
 
 for app in applications_list:
   routes_file = open(os.path.join(os.path.dirname(__file__), options.apps_dir, app,"routes.yml"))
   routes = yaml.load(routes_file)
   routes_file.close()
   routes = routes['app_route']
-  route_handlers = [(r"/"+app+str(v['route']),eval(v['handler'])) for i,v in routes.iteritems()]
+  route_handlers = [(r"/"+app+str(v['route']),eval(str(options.apps_dir)+'.'+str(app)+'.application.'+v['handler'])) for i,v in routes.iteritems()]
   handlers = handlers + route_handlers
 
 handlers = handlers + [ 
              (r"/", IndexHandler),
              (r"/reset", ResetHandler),
             ]
+
+print(str(handlers))
 
 settings = {
             'xsrf_cookies': True,
