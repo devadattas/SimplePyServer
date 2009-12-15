@@ -1,0 +1,7 @@
+app_route:
+  1:
+    route: /
+    handler: IndexHandler
+  2:
+    route: /test
+    handler: TestHandler

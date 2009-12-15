@@ -1,0 +1,4 @@
+application_configuration:
+  application_name: First App
+  application_path: /var/www/PaGaLGuY.com/GitHub/SimplePyServer/apps/first_app
+  application_relative_url: /first_app
