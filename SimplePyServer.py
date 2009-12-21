@@ -13,7 +13,6 @@ import tornado.options
 import tornado.web
 import tornado.escape
 import tornado.template
-import tornado.auth
 import tornado.ioloop 
 import unicodedata
 from tornado.options import define, options
@@ -51,25 +50,36 @@ class ResetHandler(tornado.web.RequestHandler):
 #Handling External Applications Starts
 
 handlers = []
+settings = {}
+ignore_apps = []
+for app in applications_list:
+  exec('\
+try:\n\
+  import ' + str(options.apps_dir) + '.' + str(app) + '.application\n\
+except StandardError, err:\n\
+  ignore_apps.append(app)\n\
+  print("Server encountered error with: ' + str(options.apps_dir) + '.' + str(app) + '.application.Ignoring this application...")\n\
+  print("Error:\\n\t\t"+str(err))')
+
+applications_list = list(set(applications_list).difference(set(ignore_apps)))
+print("Booting SimplePyServer...")
+print("Applications loaded into memory: " + ", ".join(applications_list))
 
 for app in applications_list:
-  exec('import '+str(options.apps_dir)+'.'+str(app)+'.application')
-
-
-for app in applications_list:
-  routes_file = open(os.path.join(os.path.dirname(__file__), options.apps_dir, app,"routes.yml"))
-  routes = yaml.load(routes_file)
+  routes_file = open(os.path.join(os.path.dirname(__file__), options.apps_dir, app, "routes.yml"))
+  app_routes = yaml.load(routes_file)
   routes_file.close()
-  routes = routes['app_route']
-  route_handlers = [(r"/"+app+str(v['route']),eval(str(options.apps_dir)+'.'+str(app)+'.application.'+v['handler'])) for i,v in routes.iteritems()]
+  routes = app_routes['app_route']
+  route_handlers = [(r"/" + app + str(v['route']), eval(str(options.apps_dir) + '.' + str(app) + '.application.' + v['handler'])) for i, v in routes.iteritems()]
+  if(app_routes.has_key("static_route")):
+    static_route = app_routes['static_route']
+    route_handlers = route_handlers + [(r"/" + app + static_route['route'], tornado.web.StaticFileHandler, { 'path' : os.path.join(os.getcwd(), options.apps_dir, app, static_route['path']) })]
   handlers = handlers + route_handlers
 
 handlers = handlers + [ 
              (r"/", IndexHandler),
              (r"/reset", ResetHandler),
             ]
-
-print(str(handlers))
 
 settings = {
             'xsrf_cookies': True,

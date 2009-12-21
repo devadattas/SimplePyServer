@@ -5,8 +5,10 @@
   </head>
   <body>
     <h1>Index of {{ title }}</h1>
+    <ul>
     {% for dirs in listing %}
-      <a href="/{{ dirs }}">{{ dirs }}</a>
+      <li><a href="/{{ dirs }}">{{ dirs }}</a></li>
     {% end %}
+    </ul>
   </body>
 </html>
