@@ -31,7 +31,6 @@ applications_list = os.listdir(options.apps_dir)
 applications_list = [app for app in applications_list if(os.path.isfile(os.path.join(os.path.dirname(__file__), options.apps_dir, app, "config.yml"))
                                                          and os.path.isfile(os.path.join(os.path.dirname(__file__), options.apps_dir, app, "routes.yml"))
                                                          and os.path.isfile(os.path.join(os.path.dirname(__file__), options.apps_dir, app, "__init__.py")))]
-
 class IndexHandler(tornado.web.RequestHandler):
   def get(self):
     self.render('index.html', title="/", listing=applications_list)
