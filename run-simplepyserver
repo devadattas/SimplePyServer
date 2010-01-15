@@ -1,4 +1,4 @@
 #!/bin/bash
 cd "$(dirname `readlink -f $0`)"
 pwd
-`which python2.5` SimplePyServer.py
+`which python2.5` SimplePyServer.py --port=8888
