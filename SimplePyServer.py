@@ -19,7 +19,7 @@ from tornado.options import define, options
 from base64 import b64decode
 from crypt  import crypt
 
-config_file = open("config.yml")
+config_file = open(os.path.join(os.path.dirname(__file__),"config.yml"))
 config = yaml.load(config_file)
 config_file.close()
 
