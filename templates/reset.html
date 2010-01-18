@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US"> 
+<head> 
+<title>Rankings Admin</title> 
+<link rel="stylesheet" href="http://www.pagalguy.com/wp-content/themes/pagalguy/stylesheets/style.css" type="text/css" media="screen" /> 
+<link rel="stylesheet" href="http://www.pagalguy.com/rankings/admin/stylesheets/style.css" type="text/css" media="screen" /> 
+<script type="text/javascript" src="http://www.pagalguy.com/wp-includes/js/jquery/jquery.js?ver=1.3.2"></script> 
+<script type="text/javascript" src="http://www.pagalguy.com/wp-content/themes/pagalguy/javascripts/portal/script.js"></script> 
+</head> 
+<body> 
+<table id="Wrapper" border="0" cellpadding="0" cellspacing="0"> 
+   <tr> 
+      <td class="Sprited LeftColumn" rowspan="2"></td> 
+      <td valign="top"> 
+        <div id="TopContainer"> 
+          <table width="100%" cellpadding="0" cellspacing="0"> 
+          <tr> 
+            <td> 
+            <a href="http://www.pagalguy.com"><img src="http://www.pagalguy.com/images/simplepyserver.jpg" alt="PaGaLGuY Rankings" border="0" /></a> 
+            </td> 
+            <td> 
+            </td> 
+          </tr> 
+          </table> 
+        </div> 
+        <hr class="TopSeparator" /> 
+              <table id="ContentColumns" border="0"> 
+         <tr> 
+            <td class="ContentColumn" > 
+                <!--Admin Content--> 
+                  <div id="LoginBlock"> 
+                    <form method="post" action=""> 
+                      {{ xsrf_form_html() }}
+                      <h2>Admin Login</h2> 
+                      <div class="Field"><label><span class="FieldTitleLogin">Username</span><input type="text" class="InputText" size="17" name="username" /></label></div> 
+                      <div class="Field"><label><span class="FieldTitleLogin">Password</span><input type="password" class="InputText" size="17" name="password" /></label></div> 
+                      <div class="Field SubmitField"><label><span class="FieldTitleLogin"></span><input type="submit" value="Sign In" class="InputButton" name="submit" /></label></div> 
+                    </form> 
+                  </div> 
+                <!--Admin Content--> 
+            </td> 
+         </tr> 
+      </table> 
+</td><td class="Sprited RightColumn" rowspan="2"></td> 
+</tr> 
+<tr><td id="FooterTD"> 
+<div id="Footer"> 
+    <span><a href="http://www.pagalguy.com/about-us">About Us</a></span> |
+    <span><a href="http://www.pagalguy.com/advertise-with-us">Advertise</a></span> |
+    <span><a href="http://www.pagalguy.com/contact-us">Contact</a></span> |
+    <span><a href="http://www.pagalguy.com/forum">MBA Forums</a></span> |
+    <span><a href="http://www.pagalguy.com/feedback">Feedback</a></span> |
+    <span><a href="http://www.pagalguy.com/privacy-policy">Privacy</a></span> 
+    <div class="CopyrightFooter">PaGaLGuY.com is an <a href="http://www.inzanelabs.com">Inzane Labs Private Limited</a> production. </div> 
+</div> 
+</td></tr> 
+</table> 
+</body> 
+</html> 
