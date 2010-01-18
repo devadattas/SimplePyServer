@@ -37,14 +37,20 @@ class IndexHandler(tornado.web.RequestHandler):
 
 class ResetHandler(tornado.web.RequestHandler):
   def get(self):
-    logging.info("Server restart requested. Rebooting server.")
-    io_loop = tornado.ioloop.IOLoop.instance()
-    for fd in io_loop._handlers.keys():
-      try:
-        os.close(fd)
-      except:
-        pass
-    os.execv(sys.executable, [sys.executable] + sys.argv) 
+    self.render('reset.html', title="/", listing=applications_list)
+  def post(self):
+    if(self.get_argument('username') == config['server_configuration']['admin_username'] and self.get_argument('password') == config['server_configuration']['admin_password'] ):
+      self.write('Preparing server reload... <meta http-equiv="refresh" content="5;url=/">')
+      logging.info("Server restart requested. Rebooting server.")
+      io_loop = tornado.ioloop.IOLoop.instance()
+      for fd in io_loop._handlers.keys():
+        try:
+          os.close(fd)
+        except:
+          pass
+      os.execv(sys.executable, [sys.executable] + sys.argv) 
+    else:
+      self.write('Invalid username and/or password')
 
 #Handling External Applications Starts
 
